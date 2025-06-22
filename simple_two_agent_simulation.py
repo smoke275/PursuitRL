@@ -378,6 +378,56 @@ class TwoAgentEnvironment:
         
         return observations, rewards, dones, truncated, info
     
+    def _find_spawn_positions(self) -> Tuple[Tuple[float, float], Tuple[float, float]]:
+        """Find good spawn positions for both agents"""
+        return find_free_spawn_positions(self.sim_env)
+    
+    def _can_see_each_other(self) -> bool:
+        """Check if the two agents can see each other (line of sight)"""
+        if len(self.agents) < 2:
+            return False
+        
+        visitor_pos = self.agents["visitor"].state[:2]
+        escort_pos = self.agents["escort"].state[:2]
+        
+        return self._line_of_sight(visitor_pos, escort_pos)
+    
+    def _get_agent_distance(self) -> float:
+        """Get distance between the two agents"""
+        if len(self.agents) < 2:
+            return float('inf')
+        
+        visitor_pos = self.agents["visitor"].state[:2]
+        escort_pos = self.agents["escort"].state[:2]
+        
+        return np.linalg.norm(visitor_pos - escort_pos)
+    
+    def _line_of_sight(self, pos1: np.ndarray, pos2: np.ndarray) -> bool:
+        """Check if there's a clear line of sight between two positions"""
+        x1, y1 = pos1
+        x2, y2 = pos2
+        
+        # Simple ray casting - check if line between positions intersects walls
+        steps = 50
+        for i in range(steps + 1):
+            t = i / steps
+            x = x1 + t * (x2 - x1)
+            y = y1 + t * (y2 - y1)
+            
+            # Check if this point intersects a wall
+            point_rect = pygame.Rect(int(x) - 2, int(y) - 2, 4, 4)
+            for wall in self.sim_env.get_all_walls():
+                if point_rect.colliderect(wall):
+                    # Check if we're in a door
+                    in_door = False
+                    for door in self.sim_env.doors:
+                        if point_rect.colliderect(door):
+                            in_door = True
+                            break
+                    if not in_door:
+                        return False
+        return True
+    
     def _get_observations(self) -> Dict[str, np.ndarray]:
         """Get observations for all agents"""
         observations = {}
