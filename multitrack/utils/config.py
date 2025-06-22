@@ -12,6 +12,7 @@ SCREEN_RECT = pygame.Rect(0, 0, WIDTH, HEIGHT)
 
 # FPS and timing
 TARGET_FPS = 45                # Target frames per second
+TRAINING_MODE = True          # When True, disables frame rate limiting for RL training
 
 # Colors
 WHITE = (255, 255, 255)

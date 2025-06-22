@@ -33,7 +33,7 @@ class SimulationEnvironment:
         self.inner_walls = [
             # Original house section (unchanged rooms)
             pygame.Rect(int(50 * scale_x), int(300 * scale_y), 
-                       int(400 * scale_x), int(10 * scale_y)),     # Upper left room divider
+                       int(410 * scale_x), int(10 * scale_y)),     # Upper left room divider
             pygame.Rect(int(550 * scale_x), int(300 * scale_y), 
                        int(400 * scale_x), int(10 * scale_y)),    # Upper right room divider
             pygame.Rect(int(300 * scale_x), int(500 * scale_y), 
